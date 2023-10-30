@@ -10,11 +10,17 @@ def get_html_data():
     print(today)  
     fpath = Path(f"{today}.html")
 
+    UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+    url = "https://montrealgazette.com/category/news/"
+    headers = {'User-Agent': UserAgent}
+
+
     if not fpath.exists():
 
-        data = requests.get("https://montrealgazette.com/category/news/")
+        result = requests.get(url, headers=headers)
+        print(result.content.decode())
         with open(fpath, "w") as f:
-            f.write(data.text)
+            f.write(result.text)
 
     with open(fpath) as f:
         return f.read()
