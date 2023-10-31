@@ -1,12 +1,14 @@
 from pathlib import Path
 import requests
 from datetime import date
-
+import bs4
 
 def get_html_data():
     
 
     today = str(date.today())
+
+    #cache: only request at most once per day 
     print(today)  
     fpath = Path(f"{today}.html")
 
@@ -18,7 +20,7 @@ def get_html_data():
     if not fpath.exists():
 
         result = requests.get(url, headers=headers)
-        print(result.content.decode())
+        #print(result.content.decode())
         with open(fpath, "w") as f:
             f.write(result.text)
 
@@ -29,7 +31,18 @@ def get_html_data():
 def main():
     
     html_data = get_html_data()
-    print(html_data)
+    soup = bs4.BeautifulSoup(html_data, "html.parser")
+
+    trend_list_widget= soup.find("div", class_="col-xs-12 top-trending" )
+    articles = trend_list_widget.find_all("div", class_="article-card__details")
+    
+
+    for article in articles:
+        title = article.find("span").text.strip()
+        link = article.find("a")['href']
+
+
+        print(link)
 
 if __name__ == "__main__":
     main()
